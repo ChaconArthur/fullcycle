@@ -1,0 +1,9 @@
+# Ignora a pasta de dados persistentes do MySQL
+dbdata/
+
+# Ignora os módulos do Node.js instalados localmente
+node/app/node_modules/
+
+# Logs e arquivos de cache
+*.log
+.DS_Store
