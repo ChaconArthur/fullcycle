@@ -1,0 +1,5 @@
+echo "fullcycle" >> .gitignore
+echo "*.exe" >> .gitignore
+echo "vendor/" >> .gitignore
+echo "go.mod" >> .gitignore
+echo "go.sum" >> .gitignore
