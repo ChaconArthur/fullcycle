@@ -7,3 +7,4 @@ node/app/node_modules/
 # Logs e arquivos de cache
 *.log
 .DS_Store
+gcm-linux_amd64.2.0.935.deb
