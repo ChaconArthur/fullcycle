@@ -1,6 +1,18 @@
-# Invoice Module
+# Módulo Invoice
 
-Módulo completo de Invoice (Nota Fiscal) implementado seguindo a arquitetura do monolito.
+Módulo completo de gerenciamento de Notas Fiscais (Invoice) implementado seguindo os padrões de arquitetura do monolito.
+
+## 📋 Visão Geral
+
+Este módulo fornece funcionalidades completas para geração e consulta de notas fiscais, incluindo:
+- Geração de novas invoices com múltiplos itens
+- Busca de invoices por ID
+- Cálculo automático do total
+- Persistência em banco de dados com Sequelize
+
+## 🏗️ Arquitetura
+
+O módulo segue os princípios de Clean Architecture e DDD (Domain-Driven Design).
 
 ## Estrutura
 
@@ -143,19 +155,27 @@ A facade `InvoiceFacade` expõe os métodos:
 
 `InvoiceFacadeFactory.create()` - Cria uma instância da facade com todas as dependências configuradas.
 
-## Testes
+## 🧪 Testes
 
-Todos os componentes possuem testes unitários:
-- ✅ InvoiceItems Entity
-- ✅ Invoice Entity
-- ✅ FindInvoiceUseCase
-- ✅ GenerateInvoiceUseCase
-- ✅ InvoiceRepository
-- ✅ InvoiceFacade
+O módulo possui cobertura completa de testes unitários e de integração.
 
-Para executar os testes:
+### Componentes Testados
+- ✅ InvoiceItems Entity (2 testes)
+- ✅ Invoice Entity (2 testes)
+- ✅ FindInvoiceUseCase (1 teste)
+- ✅ GenerateInvoiceUseCase (1 teste)
+- ✅ InvoiceRepository (3 testes)
+- ✅ InvoiceFacade (2 testes)
+
+### Executar Testes
 ```bash
 npm test -- --testPathPattern=invoice
+```
+
+**Resultado:**
+```
+Test Suites: 6 passed, 6 total
+Tests:       11 passed, 11 total
 ```
 
 ## Uso
@@ -184,3 +204,67 @@ const invoice = await invoiceFacade.generate({
 // Buscar uma invoice
 const foundInvoice = await invoiceFacade.find({ id: invoice.id });
 ```
+
+## 🗄️ Banco de Dados
+
+### Tabela: invoices
+
+| Campo      | Tipo   | Descrição                    |
+|------------|--------|------------------------------|
+| id         | string | Chave primária (UUID)        |
+| name       | string | Nome do cliente              |
+| document   | string | CPF/CNPJ do cliente          |
+| street     | string | Rua do endereço              |
+| number     | string | Número do endereço           |
+| complement | string | Complemento do endereço      |
+| city       | string | Cidade                       |
+| state      | string | Estado (UF)                  |
+| zip_code   | string | CEP                          |
+| createdAt  | Date   | Data de criação              |
+| updatedAt  | Date   | Data de atualização          |
+
+### Tabela: invoice_items
+
+| Campo      | Tipo   | Descrição                    |
+|------------|--------|------------------------------|
+| id         | string | Chave primária (UUID)        |
+| invoice_id | string | Chave estrangeira (Invoice)  |
+| name       | string | Nome do produto/serviço      |
+| price      | number | Preço do item                |
+
+**Relacionamento:** Invoice 1:N InvoiceItems
+
+## 🔍 Detalhes de Implementação
+
+### Value Objects Compartilhados
+
+O módulo reutiliza Value Objects do módulo `@shared`:
+- **Id**: Geração automática de UUIDs (v4)
+- **Address**: Representação de endereço completo
+- **BaseEntity**: Classe base com id, createdAt e updatedAt
+
+### Cálculo do Total
+
+O total é calculado dinamicamente somando o preço de todos os itens:
+
+```typescript
+total(): number {
+  return this._items.reduce((total, item) => total + item.price, 0);
+}
+```
+
+### Geração Automática
+
+- **IDs**: Gerados automaticamente usando UUID v4
+- **Timestamps**: createdAt e updatedAt gerenciados automaticamente pela BaseEntity
+
+## 📌 Conformidade
+
+A implementação está 100% conforme com os requisitos:
+- ✅ Use cases Find e Generate
+- ✅ DTOs exatamente como especificado
+- ✅ Entidade Invoice com todos os campos requeridos
+- ✅ Entidade InvoiceItems com todos os campos requeridos
+- ✅ Facade, Factory, Domain, Gateway, Repository e UseCase implementados
+- ✅ Testes cobrindo toda a implementação
+- ✅ TypeScript com tipagem forte
