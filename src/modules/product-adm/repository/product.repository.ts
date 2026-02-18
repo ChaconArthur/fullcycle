@@ -11,6 +11,7 @@ export default class ProductRepository implements ProductGateway {
       description: product.description,
       purchasePrice: product.purchasePrice,
       stock: product.stock,
+      salesPrice: product.purchasePrice * 1.5, // 50% margin for sales
       createdAt: new Date(),
       updatedAt: new Date(),
     });
