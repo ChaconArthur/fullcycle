@@ -35,4 +35,3 @@ class GetCategory:
             description=category.description,
             is_active=category.is_active,
         )
-

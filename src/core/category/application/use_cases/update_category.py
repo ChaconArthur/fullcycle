@@ -48,4 +48,3 @@ class UpdateCategory:
             raise InvalidCategory(error)
 
         self.repository.update(category)
-
