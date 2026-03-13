@@ -1,7 +1,13 @@
 import uuid
 from unittest.mock import create_autospec
 
-from src.core.genre.application.use_cases.list_genre import ListGenre, GenreOutput
+from src.core._shared.application.list_use_case import ListOutputMeta
+from src.core.genre.application.use_cases.list_genre import (
+    GenreOutput,
+    ListGenre,
+    ListGenreRequest,
+    ListGenreResponse,
+)
 from src.core.genre.domain.genre import Genre
 from src.core.genre.domain.genre_repository import GenreRepository
 
@@ -22,9 +28,9 @@ class TestListGenre:
         genre_repository.list.return_value = [genre_drama, genre_romance]
 
         use_case = ListGenre(repository=genre_repository)
-        output = use_case.execute(ListGenre.Input())
+        output = use_case.execute(ListGenreRequest())
 
-        assert output == ListGenre.Output(
+        assert output == ListGenreResponse(
             data=[
                 GenreOutput(
                     id=genre_drama.id,
@@ -38,7 +44,8 @@ class TestListGenre:
                     categories=set(),
                     is_active=True,
                 ),
-            ]
+            ],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=2),
         )
 
     def test_when_no_genres_exist_then_return_empty_data(self):
@@ -46,6 +53,9 @@ class TestListGenre:
         genre_repository.list.return_value = []
 
         use_case = ListGenre(repository=genre_repository)
-        output = use_case.execute(ListGenre.Input())
+        output = use_case.execute(ListGenreRequest())
 
-        assert output == ListGenre.Output(data=[])
+        assert output == ListGenreResponse(
+            data=[],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=0),
+        )

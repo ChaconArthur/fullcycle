@@ -56,7 +56,12 @@ class TestListAPI:
                     "name": "John Krasinski",
                     "type": "DIRECTOR",
                 },
-            ]
+            ],
+            "meta": {
+                "current_page": 1,
+                "per_page": 2,
+                "total": 2,
+            },
         }
 
         assert response.status_code == status.HTTP_200_OK

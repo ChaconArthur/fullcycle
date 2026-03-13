@@ -1,5 +1,3 @@
-from unittest.mock import create_autospec
-
 import pytest
 from src.core.cast_member.domain.cast_member_repository import CastMemberRepository
 from src.core.cast_member.application.use_cases.list_cast_member import (
@@ -8,6 +6,7 @@ from src.core.cast_member.application.use_cases.list_cast_member import (
     ListCastMemberRequest,
     ListCastMemberResponse,
 )
+from src.core._shared.application.list_use_case import ListOutputMeta
 from src.core.cast_member.domain.cast_member import CastMember, CastMemberType
 from src.core.cast_member.infra.in_memory_cast_member_repository import (
     InMemoryCastMemberRepository,
@@ -34,7 +33,10 @@ class TestListCastMember:
         use_case = ListCastMember(repository=empty_repository)
         response = use_case.execute(request=ListCastMemberRequest())
 
-        assert response == ListCastMemberResponse(data=[])
+        assert response == ListCastMemberResponse(
+            data=[],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=0),
+        )
 
     def test_when_cast_members_exist_then_return_mapped_list(
         self,
@@ -60,5 +62,6 @@ class TestListCastMember:
                     name=director.name,
                     type=director.type,
                 ),
-            ]
+            ],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=2),
         )

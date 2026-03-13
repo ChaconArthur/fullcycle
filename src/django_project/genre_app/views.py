@@ -16,6 +16,7 @@ from src.core.genre.application.use_cases import (
     DeleteGenre,
     UpdateGenre,
 )
+from src.core.genre.application.use_cases.list_genre import ListGenreRequest
 from src.core.genre.application.use_cases.exceptions import (
     GenreNotFound,
     InvalidGenre,
@@ -35,7 +36,10 @@ from src.django_project.genre_app.serializers import (
 class GenreViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
         use_case = ListGenre(repository=DjangoORMGenreRepository())
-        output: ListGenre.Input = use_case.execute(ListGenre.Input())
+        output = use_case.execute(ListGenreRequest(
+            order_by=request.query_params.get("order_by", "name"),
+            current_page=int(request.query_params.get("current_page", 1)),
+        ))
         response_serializer = ListGenreOutputSerializer(output)
 
         return Response(

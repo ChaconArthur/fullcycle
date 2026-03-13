@@ -8,6 +8,7 @@ from src.core.cast_member.application.use_cases.list_cast_member import (
     ListCastMemberRequest,
     ListCastMemberResponse,
 )
+from src.core._shared.application.list_use_case import ListOutputMeta
 from src.core.cast_member.domain.cast_member import CastMember, CastMemberType
 
 
@@ -52,7 +53,10 @@ class TestListCastMember:
         use_case = ListCastMember(repository=mock_empty_repository)
         response = use_case.execute(request=ListCastMemberRequest())
 
-        assert response == ListCastMemberResponse(data=[])
+        assert response == ListCastMemberResponse(
+            data=[],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=0),
+        )
 
     def test_when_cast_members_exist_then_return_mapped_list(
         self,
@@ -75,5 +79,6 @@ class TestListCastMember:
                     name=director.name,
                     type=director.type,
                 ),
-            ]
+            ],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=2),
         )

@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from src import config
+from src.core._shared.application.list_use_case import ListOutput, ListOutputMeta, ListRequest
 from src.core.genre.domain.genre_repository import GenreRepository
 
 
@@ -12,29 +14,45 @@ class GenreOutput:
     is_active: bool
 
 
+@dataclass
+class ListGenreRequest(ListRequest):
+    pass
+
+
+@dataclass
+class ListGenreResponse(ListOutput[GenreOutput]):
+    pass
+
+
 class ListGenre:
     def __init__(self, repository: GenreRepository):
         self.repository = repository
 
-    @dataclass
-    class Input:
-        pass
+    Input = ListGenreRequest
+    Output = ListGenreResponse
 
-    @dataclass
-    class Output:
-        data: list[GenreOutput]
-
-    def execute(self, input: Input) -> Output:
+    def execute(self, input: ListGenreRequest) -> ListGenreResponse:
         genres = self.repository.list()
+        ordered_genres = sorted(
+            genres,
+            key=lambda genre: getattr(genre, input.order_by),
+        )
+        page_offset = (input.current_page - 1) * config.DEFAULT_PAGINATION_SIZE
+        genres_page = ordered_genres[page_offset:page_offset + config.DEFAULT_PAGINATION_SIZE]
 
-        data = [
-            GenreOutput(
-                id=genre.id,
-                name=genre.name,
-                categories=genre.categories,
-                is_active=genre.is_active,
-            )
-            for genre in genres
-        ]
-
-        return self.Output(data=data)
+        return ListGenreResponse(
+            data=[
+                GenreOutput(
+                    id=genre.id,
+                    name=genre.name,
+                    categories=genre.categories,
+                    is_active=genre.is_active,
+                )
+                for genre in genres_page
+            ],
+            meta=ListOutputMeta(
+                current_page=input.current_page,
+                per_page=config.DEFAULT_PAGINATION_SIZE,
+                total=len(genres),
+            ),
+        )
