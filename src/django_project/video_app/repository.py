@@ -13,10 +13,12 @@ class DjangoORMVideoRepository(VideoRepository):
     def save(self, video: Video) -> None:
         with transaction.atomic():
             video_model = VideoORM.objects.create(
+                id=video.id,
                 title=video.title,
                 description=video.description,
                 launch_year=video.launch_year,
                 opened=video.opened,
+                published=video.published,
                 duration=video.duration,
                 rating=video.rating,
             )

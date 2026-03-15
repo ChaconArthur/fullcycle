@@ -15,7 +15,10 @@ class TestCastMemberE2E:
         # Lista vazia inicial
         list_response = api_client.get("/api/cast_members/")
         assert list_response.status_code == 200
-        assert list_response.data == {"data": []}
+        assert list_response.data == {
+            "data": [],
+            "meta": {"current_page": 1, "per_page": 2, "total": 0},
+        }
 
         # Cria um ator
         create_response = api_client.post(
@@ -31,7 +34,8 @@ class TestCastMemberE2E:
         assert list_response.data == {
             "data": [
                 {"id": cast_member_id, "name": "John Doe", "type": "ACTOR"}
-            ]
+            ],
+            "meta": {"current_page": 1, "per_page": 2, "total": 1},
         }
 
         # Edita o membro de elenco (troca nome e tipo)
@@ -46,7 +50,8 @@ class TestCastMemberE2E:
         assert list_response.data == {
             "data": [
                 {"id": cast_member_id, "name": "Jane Doe", "type": "DIRECTOR"}
-            ]
+            ],
+            "meta": {"current_page": 1, "per_page": 2, "total": 1},
         }
 
         # Deleta o membro
@@ -55,4 +60,7 @@ class TestCastMemberE2E:
 
         # Verifica que a listagem está vazia novamente
         list_response = api_client.get("/api/cast_members/")
-        assert list_response.data == {"data": []}
+        assert list_response.data == {
+            "data": [],
+            "meta": {"current_page": 1, "per_page": 2, "total": 0},
+        }
